@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+<script src="./check-native.js"></script>
+<script src="./evil.js"></script>
+<script>
+function isNative(fn){
+  return fn.toString() === `function ${fn.name}() { [native code] }`
+}
+let obj = {name:'Illl'}
+console.log(obj)
+console.log('isNative',isNative(JSON.stringify))
+console.log('被污染了',JSON.stringify(obj)) 
+
+let iframe = document.createElement('iframe')
+iframe.style.display = 'none'
+document.body.appendChild(iframe)
+let {JSON:cleanJSON} = iframe.contentWindow
+console.log('iframe也被污染了',cleanJSON.stringify(obj)) 
+console.log('*'.repeat(20))
+
+checkNative(true)
+console.log('checkNative重置了',JSON.stringify(obj)) 
+
+</script>
+</body>
+</html>

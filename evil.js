@@ -1,13 +1,24 @@
 
 
 // 污染代码
-const _getItem = localStorage.getItem;
-localStorage.getItem = function (...args) {
-  let result = _getItem.call(global.localStorage, ...args);
-  if (Math.random() < 0.05) {
-    result = '';
+if(typeof window==='object'){
+  const _getItem = localStorage.getItem;
+  localStorage.getItem = function (...args) {
+    let result = _getItem.call(global.localStorage, ...args);
+    if (Math.random() < 0.05) {
+      result = '';
+    }
+    return result;
   }
-  return result;
+  // 注入
+  const _appenChild = document.body.appendChild.bind(document.body)
+  document.body.appendChild = function(child){
+    _appenChild(child)
+    if(child.tagName.toLowerCase()==='iframe'){
+      // 污染
+      iframe.contentWindow.JSON.stringify = myStringify
+    }
+  }
 }
 
 
@@ -32,12 +43,3 @@ JSON.stringify.toString = function(){
   return `function stringify() { [native code] }`
 }
 
-// 注入
-const _appenChild = document.body.appendChild.bind(document.body)
-document.body.appendChild = function(child){
-  _appenChild(child)
-  if(child.tagName.toLowerCase()==='iframe'){
-    // 污染
-    iframe.contentWindow.JSON.stringify = myStringify
-  }
-}

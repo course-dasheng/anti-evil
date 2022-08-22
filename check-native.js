@@ -13,8 +13,7 @@
       stringify
     },
     setTimeout,
-    setInterval,
-    fetch
+    setInterval
   }
   if(inBrowser){
     let {localStorage:{getItem,setItem},fetch} = global
@@ -41,7 +40,7 @@
           if(!isEqual){
             console.log(`${prop}${MSG}`)
             if(reset){
-              window[prop] = _snapshots[prop]
+              global[prop] = _snapshots[prop]
             }
           }
         }else{
@@ -50,7 +49,7 @@
             if(!isEqual){
               console.log(`${prop}.${key}${MSG}`)
               if(reset){
-                window[prop][key] = _snapshots[prop][key]
+                global[prop][key] = _snapshots[prop][key]
               }
             }
           }

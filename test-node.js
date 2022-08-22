@@ -1,5 +1,5 @@
 const vm = require('vm')
-require('./check-native')
+require('./ani-evil')
 require('./evil')
 
 function isNative(fn){
